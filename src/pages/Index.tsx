@@ -70,7 +70,7 @@ const Index = () => {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {metrics.map((metric) => (
-          <Card key={metric.title} className="glass-card hover-scale">
+          <Card key={metric.title} className="glass-card hover-scale fade-in-element">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">
                 {metric.title}
@@ -88,7 +88,7 @@ const Index = () => {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7 mt-6">
-        <Card className="glass-card col-span-4">
+        <Card className="glass-card col-span-4 fade-in-element">
           <CardHeader>
             <CardTitle>Engagement Overview</CardTitle>
             <CardDescription>
@@ -120,7 +120,7 @@ const Index = () => {
           </CardContent>
         </Card>
 
-        <Card className="glass-card col-span-3">
+        <Card className="glass-card col-span-3 fade-in-element">
           <CardHeader>
             <CardTitle>Upcoming Posts</CardTitle>
             <CardDescription>

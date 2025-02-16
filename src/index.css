@@ -61,6 +61,18 @@
   @apply transition-transform duration-300 hover:scale-105;
 }
 
-.fade-in {
-  @apply animate-in fade-in duration-500;
+.fade-in-element {
+  @apply animate-in duration-500;
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

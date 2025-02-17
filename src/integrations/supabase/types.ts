@@ -9,7 +9,118 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      alerts: {
+        Row: {
+          created_at: string | null
+          id: string
+          message: string
+          metadata: Json | null
+          resolved_at: string | null
+          service_id: string | null
+          severity: string
+          status: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message: string
+          metadata?: Json | null
+          resolved_at?: string | null
+          service_id?: string | null
+          severity: string
+          status: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message?: string
+          metadata?: Json | null
+          resolved_at?: string | null
+          service_id?: string | null
+          severity?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alerts_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      metrics: {
+        Row: {
+          id: string
+          labels: Json | null
+          metric_name: string
+          service_id: string | null
+          timestamp: string | null
+          unit: string | null
+          value: number
+        }
+        Insert: {
+          id?: string
+          labels?: Json | null
+          metric_name: string
+          service_id?: string | null
+          timestamp?: string | null
+          unit?: string | null
+          value: number
+        }
+        Update: {
+          id?: string
+          labels?: Json | null
+          metric_name?: string
+          service_id?: string | null
+          timestamp?: string | null
+          unit?: string | null
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "metrics_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      services: {
+        Row: {
+          api_key_identifier: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          settings: Json | null
+          type: Database["public"]["Enums"]["service_type"]
+          updated_at: string | null
+        }
+        Insert: {
+          api_key_identifier?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          settings?: Json | null
+          type: Database["public"]["Enums"]["service_type"]
+          updated_at?: string | null
+        }
+        Update: {
+          api_key_identifier?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          settings?: Json | null
+          type?: Database["public"]["Enums"]["service_type"]
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +129,13 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      service_type:
+        | "linode_server"
+        | "wordpress_hosting"
+        | "windows_rdp"
+        | "cloudflare"
+        | "api_service"
+        | "other"
     }
     CompositeTypes: {
       [_ in never]: never

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
   Card,
@@ -18,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Link } from "react-router-dom";
 
 const websiteData = [
   {
@@ -163,11 +163,19 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background p-8">
-      <header className="mb-8">
-        <h1 className="text-4xl font-bold tracking-tight">Analytics Dashboard</h1>
-        <p className="text-muted-foreground mt-2">
-          Monitor your websites and social media performance
-        </p>
+      <header className="mb-8 flex justify-between items-center">
+        <div>
+          <h1 className="text-4xl font-bold tracking-tight">Analytics Dashboard</h1>
+          <p className="text-muted-foreground mt-2">
+            Monitor your websites and social media performance
+          </p>
+        </div>
+        <Link 
+          to="/resources" 
+          className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md"
+        >
+          View Resources
+        </Link>
       </header>
 
       <div className="mb-8">

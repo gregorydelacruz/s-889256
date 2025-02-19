@@ -1,4 +1,5 @@
 
+
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
@@ -16,6 +17,7 @@ import { useQuery } from "@tanstack/react-query";
 import MetricsGrid from "@/components/resources/MetricsGrid";
 import ResourceCharts from "@/components/resources/ResourceCharts";
 import ResourceAlerts from "@/components/resources/ResourceAlerts";
+import { useToast } from "@/hooks/use-toast";
 
 const fetchServices = async () => {
   const { data, error } = await supabase
@@ -23,7 +25,10 @@ const fetchServices = async () => {
     .select('*')
     .order('name');
   
-  if (error) throw error;
+  if (error) {
+    console.error("Error fetching services:", error);
+    throw error;
+  }
   return data;
 };
 
@@ -34,14 +39,18 @@ const fetchServiceMetrics = async (serviceId: string) => {
     .eq('service_id', serviceId)
     .order('timestamp', { ascending: true });
   
-  if (error) throw error;
+  if (error) {
+    console.error("Error fetching metrics:", error);
+    throw error;
+  }
   return data;
 };
 
 const Resources = () => {
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
+  const { toast } = useToast();
 
-  const { data: services = [], isLoading: isLoadingServices } = useQuery({
+  const { data: services = [], isLoading: isLoadingServices, error: servicesError } = useQuery({
     queryKey: ['services'],
     queryFn: fetchServices,
   });
@@ -51,6 +60,16 @@ const Resources = () => {
     queryFn: () => selectedServiceId ? fetchServiceMetrics(selectedServiceId) : Promise.resolve([]),
     enabled: !!selectedServiceId,
   });
+
+  useEffect(() => {
+    if (servicesError) {
+      toast({
+        title: "Error",
+        description: "Failed to load services. Please try again later.",
+        variant: "destructive",
+      });
+    }
+  }, [servicesError, toast]);
 
   // Set initial selected service
   useEffect(() => {
@@ -62,12 +81,21 @@ const Resources = () => {
   const currentService = services.find(service => service.id === selectedServiceId);
 
   const getLatestMetrics = () => {
+    if (metrics.length === 0) return {
+      cpu: 0,
+      memory: 0,
+      storage: 0,
+      network: 0,
+    };
+
     const latestMetrics: Record<string, number> = {};
     metrics.forEach(metric => {
-      if (!latestMetrics[metric.metric_name] || new Date(metric.timestamp || '') > new Date(latestMetrics[metric.metric_name])) {
+      if (!latestMetrics[metric.metric_name] || 
+          new Date(metric.timestamp || '') > new Date(latestMetrics[metric.metric_name])) {
         latestMetrics[metric.metric_name] = metric.value;
       }
     });
+    
     return {
       cpu: latestMetrics['cpu_usage'] || 0,
       memory: latestMetrics['memory_usage'] || 0,
@@ -123,3 +151,4 @@ const Resources = () => {
 };
 
 export default Resources;
+

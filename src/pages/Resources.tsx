@@ -1,5 +1,4 @@
 
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
@@ -53,13 +52,41 @@ const Resources = () => {
   const { data: services = [], isLoading: isLoadingServices, error: servicesError } = useQuery({
     queryKey: ['services'],
     queryFn: fetchServices,
+    refetchInterval: 30000, // Refetch services list every 30 seconds
   });
 
   const { data: metrics = [], isLoading: isLoadingMetrics } = useQuery({
     queryKey: ['metrics', selectedServiceId],
     queryFn: () => selectedServiceId ? fetchServiceMetrics(selectedServiceId) : Promise.resolve([]),
     enabled: !!selectedServiceId,
+    refetchInterval: 10000, // Refetch metrics every 10 seconds
   });
+
+  // Subscribe to real-time updates for metrics
+  useEffect(() => {
+    if (!selectedServiceId) return;
+
+    const channel = supabase
+      .channel('metrics-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'metrics',
+          filter: `service_id=eq.${selectedServiceId}`
+        },
+        () => {
+          // Manually trigger a refetch when we receive a real-time update
+          void fetchServiceMetrics(selectedServiceId);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [selectedServiceId]);
 
   useEffect(() => {
     if (servicesError) {
@@ -151,4 +178,3 @@ const Resources = () => {
 };
 
 export default Resources;
-
